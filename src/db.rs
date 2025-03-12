@@ -17,7 +17,6 @@ impl Default for Manager {
 impl Manager {
     pub fn new(path: &str) -> Result<Self, Error> {
         let conn = Connection::open(path)?;
-        eprintln!("Conn debug :: {:?}", conn);
 
         let _ = conn.execute(
             "CREATE TABLE IF NOT EXISTS envs (
