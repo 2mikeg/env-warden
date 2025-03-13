@@ -1,0 +1,43 @@
+name: Release Binaries
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        target:
+          - x86_64-unknown-linux-gnu
+          - x86_64-pc-windows-gnu
+          - x86_64-apple-darwin
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Rename binary
+        run: |
+          BIN_NAME="env-warden"
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            mv target/${{ matrix.target }}/release/$BIN_NAME.exe $BIN_NAME-${{ matrix.target }}.exe
+          else
+            mv target/${{ matrix.target }}/release/$BIN_NAME $BIN_NAME-${{ matrix.target }}
+          fi
+
+      - name: Upload Binaries to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            env-warden-*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
