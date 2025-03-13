@@ -13,15 +13,22 @@ CYAN="\033[36m"
 MAGENTA="\033[35m"
 
 DB_DIR="$HOME/.local/share"
-DB_NAME="my_database.sqlite"
+DB_NAME="env-warden.sqlite"
 DB_PATH="$DB_DIR/$DB_NAME"
 BIN_PATH="/opt/env-warden/env-warden"
 SYMLINK_PATH="/usr/local/bin/env-warden"
+REPO_URL="https://github.com/2mikeg/env-warden"
+CLONE_DIR="$HOME/env-warden"
 
 error_exit() {
     printf "${BOLD}${RED}❌ ERROR:${RESET} %s\n" "$1" >&2
     exit 1
 }
+
+printf "${BOLD}${CYAN}📥 Cloning repository...${RESET}\n"
+rm -rf "$CLONE_DIR" || error_exit "Failed to remove existing directory"
+git clone "$REPO_URL" "$CLONE_DIR" || error_exit "Failed to clone repository"
+cd "$CLONE_DIR" || error_exit "Failed to enter repository directory"
 
 printf "${BOLD}${CYAN}🔨 Building project with Cargo...${RESET}\n"
 cargo build --release || error_exit "Cargo build failed."
