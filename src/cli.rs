@@ -3,6 +3,14 @@ use clap::{Parser, Subcommand};
 use inquire::{MultiSelect, Text};
 use std::fmt::Display;
 
+/// Represents the command-line interface (CLI) for the env-warden application.
+///
+/// This structure defines the available subcommands and handles their execution.
+///
+/// # Attributes
+///
+/// * `command` - The subcommand to be executed.
+/// * `manager` - The database manager.
 #[derive(Parser, Debug)]
 #[command(
     name = "env-warden",
@@ -73,7 +81,14 @@ impl Cli {
 
                 self.manager.insert(&var_name, &var_value).unwrap();
             }
-            Commands::Prune => self.manager.prune().unwrap(),
+            Commands::Prune => {
+                let y_n = Text::new("Are you sure? (y/n):").prompt().unwrap();
+                if y_n == "y" {
+                    self.manager.prune().unwrap();
+                } else {
+                    eprint!("Aborted");
+                }
+            }
             Commands::List => {
                 let s = self.manager.search().unwrap();
                 for (k, v) in s {
