@@ -1,14 +1,12 @@
-use crate::cli::{Cli, Commands};
+use crate::cli::Cli;
 use crate::db::Manager;
 use clap::Parser;
-
-use rusqlite::{params, Connection, Result};
 
 mod cli;
 mod db;
 mod error;
 fn main() {
-    let manager_res = Manager::new("/var/db/env-warden.db");
+    let manager_res = Manager::new("/Users/mike/.local/share/db.sqlite");
     let manager = manager_res.unwrap();
 
     let mut cli = Cli::parse();

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::error::Error;
-use rusqlite::{params, Connection, Result};
+use rusqlite::{params, Connection, OpenFlags, Result};
 
 #[derive(Debug)]
 pub struct Manager {
@@ -16,7 +16,10 @@ impl Default for Manager {
 
 impl Manager {
     pub fn new(path: &str) -> Result<Self, Error> {
-        let conn = Connection::open(path)?;
+        let conn = Connection::open_with_flags(
+            path,
+            OpenFlags::SQLITE_OPEN_READ_WRITE | OpenFlags::SQLITE_OPEN_CREATE,
+        )?;
 
         let _ = conn.execute(
             "CREATE TABLE IF NOT EXISTS envs (
